@@ -112,7 +112,7 @@ void MainWindow::commitComputer(const int &i, const int &j) {
 void MainWindow::on_btn_00_clicked() {
 
 	const int i = 0;
-	const int j = 2;
+	const int j = 0;
 
 	if (available(i, j)) {
 
@@ -157,7 +157,18 @@ void MainWindow::on_btn_10_clicked() {
 
 void MainWindow::on_btn_11_clicked() {
 
+	const int i = 1;
+	const int j = 1;
 
+	if (available(i, j)) {
+
+		commitPlayer(i, j);
+
+		think(i, j, 2); //think(0, 0, center);
+
+		step++;
+
+	}
 
 }
 
@@ -209,18 +220,15 @@ void MainWindow::on_btn_22_clicked() {
 
 void MainWindow::think(const int &i, const int &j, const int &position) {
 
-	for (int i = 0; i < 3; ++i) {
-		for (int j = 0; j < 3; ++j) {
-			qDebug() << player[i][j];
-			qDebug() << computer[i][j];
-		}
-		qDebug() << "-----";
-	}
-	qDebug() << "*-----------*";
-
 	if (step == 0) {
 
 		firstMove(i, j, position);
+
+	}
+
+	else {
+
+		//?????
 
 	}
 
