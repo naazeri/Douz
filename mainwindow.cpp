@@ -7,12 +7,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow),
 	p('*'), c('O'),
 	col(3), row(3),
-	step(0)
+	step(1)
 {
 
 	ui->setupUi(this);
 
 	initData();
+
 
 }
 
@@ -63,14 +64,15 @@ bool MainWindow::available(const int &i, const int &j) const{
 
 }
 
-int MainWindow::where(const int &i, const int &j) const {
+void MainWindow::where(const int &i, const int &j) {
 
 	if ((i == 0 && j == 0)
 			|| (i == 0 && j == 2)
 			|| (i == 2 && j == 0)
 			|| (i == 2 && j == 2)) {
 
-		return 0; //Side
+		place = side;
+		return;
 
 	}
 
@@ -79,13 +81,15 @@ int MainWindow::where(const int &i, const int &j) const {
 			|| (i == 1 && j == 2)
 			|| (i == 2 && j == 1)) {
 
-		return 1; //Middle
+		place = middle;
+		return;
 
 	}
 
 	else if ((i == 1 && j == 1)) {
 
-		return 2;//center
+		place = center;
+		return;
 
 	}
 
@@ -116,11 +120,9 @@ void MainWindow::on_btn_00_clicked() {
 
 	if (available(i, j)) {
 
+		place = side;
 		commitPlayer(i,  j);
-
-		think(i, j, 0); //think(0, 0, side);
-
-		step++;
+		think(i, j);
 
 	}
 
@@ -139,11 +141,9 @@ void MainWindow::on_btn_02_clicked() {
 
 	if (available(i, j)) {
 
-		commitPlayer(i, j);
-
-		think(i, j, 0); //think(0, 0, side);
-
-		step++;
+		place = side;
+		commitPlayer(i,  j);
+		think(i, j);
 
 	}
 
@@ -162,11 +162,9 @@ void MainWindow::on_btn_11_clicked() {
 
 	if (available(i, j)) {
 
-		commitPlayer(i, j);
-
-		think(i, j, 2); //think(0, 0, center);
-
-		step++;
+		place = center;
+		commitPlayer(i,  j);
+		think(i, j);
 
 	}
 
@@ -185,11 +183,9 @@ void MainWindow::on_btn_20_clicked() {
 
 	if (available(i, j)) {
 
-		commitPlayer(i, j);
-
-		think(i, j, 0); //think(0, 0, side);
-
-		step++;
+		place = side;
+		commitPlayer(i,  j);
+		think(i, j);
 
 	}
 
@@ -208,49 +204,76 @@ void MainWindow::on_btn_22_clicked() {
 
 	if (available(i, j)) {
 
-		commitPlayer(i, j);
+		place = side;
+		commitPlayer(i,  j);
+		think(i, j);
 
-		think(i, j, 0); //think(0, 0, side);
 
+	}
+
+}
+
+void MainWindow::think(const int &i, const int &j) {
+
+	switch (step) {
+
+	case 1:
+
+		firstMove(i, j);
 		step++;
+		break;
 
+	case 2:
+
+		break;
+
+	case 3:
+
+		break;
+
+	case 4:
+
+		break;
+
+	case 5:
+
+		break;
+
+	case 6:
+
+		break;
+
+	case 7:
+
+		break;
+
+	case 8:
+
+		break;
+
+	default:
+		break;
 	}
 
 }
 
-void MainWindow::think(const int &i, const int &j, const int &position) {
+void MainWindow::firstMove(const int &i, const int &j) {
 
-	if (step == 0) {
+//	where(i, j);
 
-		firstMove(i, j, position);
-
-	}
-
-	else {
-
-		//?????
-
-	}
-
-}
-
-void MainWindow::firstMove(const int &i, const int &j, const int &position) {
-
-//	const int whereIs = where(i, j);
-
-	if (position == 0) {
+	if (place == side) {
 
 		firstMoveInSide(i, j);
 
 	}
 
-	else if (position == 1) {
+	else if (place == middle) {
 
 		firstMoveInMiddle(i, j);
 
 	}
 
-	else if (position == 2) {
+	else if (place == center) {
 
 		firstMoveInCenter();
 
@@ -288,7 +311,26 @@ void MainWindow::firstMoveInSide(const int &i, const int &j) {
 
 void MainWindow::firstMoveInMiddle(const int &i, const int &j) {
 
+	/*if (available(0, 0)) {
 
+		commitComputer(0, 0); //top-left
+
+	}
+
+	else if (available(0, 2)) {
+
+		commitComputer(0, 2); //top-right
+	}
+
+	else if (available(2, 2)) {
+
+		commitComputer(0, 2);
+	}
+
+	else if (available(0, 2)) {
+
+		commitComputer(0, 2);
+	}*/
 
 }
 
