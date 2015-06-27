@@ -34,31 +34,48 @@ private:
 		side = 0, middle, center
 	}place;
 
+	enum positionHolder {
+		top = 0, left = 0, bottom = 2, right = 2
+	};
+
 	bool player[3][3];
 	bool computer[3][3];
 
-	int step;
 	const short col, row;
+	int step;
+	int i, j;
 
-	const QString p, c;
+	const QString p;
+	const QString c;
 	QPushButton ***btn;
 
 
 	void initData();
 	void resetScore();
 
-	bool available(const int&, const int&) const;
+	bool available() const;
 
-	void commitPlayer(const int&, const int&);
+	void move();
+
+	void playerMove();
+	void commitPlayer();
+
+	void computerMove();
 	void commitComputer(const int&, const int&);
 
-	void  where(const int&, const int&);
-	void firstMove(const int&, const int&);
-	void firstMoveInSide(const int&, const int&);
-	void firstMoveInMiddle(const int &, const int &);
+	void firstMove();
+	void firstMoveInSide();
+	void firstMoveInMiddle();
 	void firstMoveInCenter();
 
-	void think(const int&, const int&);
+	void move2();
+	void move3();
+	void move4();
+	void move5();
+	void move6();
+	void move7();
+
+	void think();
 
 };
 

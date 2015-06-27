@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
+#include <QTime>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -58,73 +59,59 @@ void MainWindow::resetScore() {
 	}
 }
 
-bool MainWindow::available(const int &i, const int &j) const{
+bool MainWindow::available() const{
 
-	return (player[i][j] && computer[i][j])? false : true;
+	return (player[i][j] || computer[i][j])? false : true;
 
 }
 
-void MainWindow::where(const int &i, const int &j) {
+void MainWindow::move() {
 
-	if ((i == 0 && j == 0)
-			|| (i == 0 && j == 2)
-			|| (i == 2 && j == 0)
-			|| (i == 2 && j == 2)) {
+	if (available()) {
 
-		place = side;
-		return;
-
-	}
-
-	else if ((i == 0 && j == 1)
-			|| (i == 1 && j == 0)
-			|| (i == 1 && j == 2)
-			|| (i == 2 && j == 1)) {
-
-		place = middle;
-		return;
-
-	}
-
-	else if ((i == 1 && j == 1)) {
-
-		place = center;
-		return;
-
+		playerMove();
+		computerMove();
 	}
 
 }
 
-void MainWindow::commitPlayer(const int &i, const int &j) {
+void MainWindow::playerMove() {
+
+	commitPlayer();
+
+}
+
+void MainWindow::commitPlayer() {
+
+	player[i][j] = true;
 
 	btn[i][j]->setText(p);
 	btn[i][j]->setFlat(true);
 
-	player[i][j] = true;
+}
+
+void MainWindow::computerMove() {
+
+	think();
 
 }
 
 void MainWindow::commitComputer(const int &i, const int &j) {
 
+	computer[i][j] = true;
+
 	btn[i][j]->setText(c);
 	btn[i][j]->setFlat(true);
 
-	computer[i][j] = true;
-
 }
+
 
 void MainWindow::on_btn_00_clicked() {
 
-	const int i = 0;
-	const int j = 0;
+	place = side;
+	i = top; j = left;
 
-	if (available(i, j)) {
-
-		place = side;
-		commitPlayer(i,  j);
-		think(i, j);
-
-	}
+	move();
 
 }
 
@@ -136,16 +123,10 @@ void MainWindow::on_btn_01_clicked() {
 
 void MainWindow::on_btn_02_clicked() {
 
-	const int i = 0;
-	const int j = 2;
+	place = side;
+	i = top;j = right;
 
-	if (available(i, j)) {
-
-		place = side;
-		commitPlayer(i,  j);
-		think(i, j);
-
-	}
+	move();
 
 }
 
@@ -157,16 +138,10 @@ void MainWindow::on_btn_10_clicked() {
 
 void MainWindow::on_btn_11_clicked() {
 
-	const int i = 1;
-	const int j = 1;
+	place = center;
+	i = middle; j = middle;
 
-	if (available(i, j)) {
-
-		place = center;
-		commitPlayer(i,  j);
-		think(i, j);
-
-	}
+	move();
 
 }
 
@@ -178,16 +153,10 @@ void MainWindow::on_btn_12_clicked() {
 
 void MainWindow::on_btn_20_clicked() {
 
-	const int i = 2;
-	const int j = 0;
+	place = side;
+	i = bottom; j = left;
 
-	if (available(i, j)) {
-
-		place = side;
-		commitPlayer(i,  j);
-		think(i, j);
-
-	}
+	move();
 
 }
 
@@ -199,28 +168,20 @@ void MainWindow::on_btn_21_clicked() {
 
 void MainWindow::on_btn_22_clicked() {
 
-	const int i = 2;
-	const int j = 2;
+	place = side;
+	i = bottom; j = right;
 
-	if (available(i, j)) {
-
-		place = side;
-		commitPlayer(i,  j);
-		think(i, j);
-
-
-	}
+	move();
 
 }
 
-void MainWindow::think(const int &i, const int &j) {
+void MainWindow::think() {
 
 	switch (step) {
 
 	case 1:
 
-		firstMove(i, j);
-		step++;
+		firstMove();
 		break;
 
 	case 2:
@@ -257,19 +218,19 @@ void MainWindow::think(const int &i, const int &j) {
 
 }
 
-void MainWindow::firstMove(const int &i, const int &j) {
 
-//	where(i, j);
+void MainWindow::firstMove() {
+
 
 	if (place == side) {
 
-		firstMoveInSide(i, j);
+		firstMoveInSide();
 
 	}
 
 	else if (place == middle) {
 
-		firstMoveInMiddle(i, j);
+		firstMoveInMiddle();
 
 	}
 
@@ -279,63 +240,125 @@ void MainWindow::firstMove(const int &i, const int &j) {
 
 	}
 
-}
-
-void MainWindow::firstMoveInSide(const int &i, const int &j) {
-
-	if (i == 0 && j == 0) {
-
-		commitComputer(i + 2, j + 2);
-
-	}
-
-	else if (i == 0 && j == 2) {
-
-		commitComputer(i + 2, j - 2);
-
-	}
-
-	else if (i == 2 && j == 0) {
-
-		commitComputer(i - 2, j + 2);
-
-	}
-
-	else if (i == 2 && j == 2) {
-
-		commitComputer(i - 2, j - 2);
-
-	}
+	step++;
 
 }
 
-void MainWindow::firstMoveInMiddle(const int &i, const int &j) {
+void MainWindow::firstMoveInSide() {
 
-	/*if (available(0, 0)) {
+	commitComputer(middle, middle);
 
-		commitComputer(0, 0); //top-left
+
+//	if (i == top && j == left) {
+
+//		commitComputer(bottom, right);
+
+//	}
+
+//	else if (i == top && j == right) {
+
+//		commitComputer(bottom, left);
+
+//	}
+
+//	else if (i == bottom && j == left) {
+
+//		commitComputer(top, right);
+
+//	}
+
+//	else if (i == bottom && j == right) {
+
+//		commitComputer(top, left);
+
+//	}
+
+}
+
+void MainWindow::firstMoveInMiddle() {
+
+	if (i == top && j == middle) {
+
+		commitComputer(top, left);
 
 	}
 
-	else if (available(0, 2)) {
+	else if (i == middle && j == left) {
 
-		commitComputer(0, 2); //top-right
+		commitComputer(top, left);
+
 	}
 
-	else if (available(2, 2)) {
+	else if (i == middle && j == right) {
 
-		commitComputer(0, 2);
+		commitComputer(top, right);
+
 	}
 
-	else if (available(0, 2)) {
+	else if (i == bottom && j == middle) {
 
-		commitComputer(0, 2);
-	}*/
+		commitComputer(top, middle);
+
+	}
 
 }
 
 void MainWindow::firstMoveInCenter() {
 
-	commitComputer(0,0);
+	QTime time = QTime::currentTime();
+	qsrand(time.msec());
+
+	int rand = qrand() %4;
+
+	if (rand == 0) {
+
+		commitComputer(0,0);
+	}
+	else if (rand == 1) {
+
+		commitComputer(0,2);
+	}
+	else if (rand == 2) {
+
+		commitComputer(2,0);
+	}
+	else if (rand == 3) {
+
+		commitComputer(2,2);
+	}
+
+}
+
+void MainWindow::move2() {
+
+	if (i == top && j == left) {
+
+
+	}
+
+}
+
+void MainWindow::move3() {
+
+
+}
+
+void MainWindow::move4() {
+
+
+}
+
+void MainWindow::move5() {
+
+
+}
+
+void MainWindow::move6() {
+
+
+}
+
+void MainWindow::move7() {
+
 
 }
