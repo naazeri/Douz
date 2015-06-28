@@ -30,53 +30,34 @@ private slots:
 private:
 	Ui::MainWindow *ui;
 
-	enum placeHolder {
-		side = 0, middle, center
-	}place;
+	unsigned int game[3][3];
 
-	enum positionHolder {
-		top = 0, left = 0, bottom = 2, right = 2
-	};
-
-	bool player[3][3];
-	bool computer[3][3];
-
-	const short col, row;
-	int step;
 	int i, j;
-
-	const QString p;
-	const QString c;
 	QPushButton ***btn;
 
+	const short col, row;
+	const QString p, c;
 
 	void initData();
-	void resetScore();
-
-	bool available() const;
 
 	void move();
-
 	void playerMove();
-	void commitPlayer();
-
-	void computerMove();
-	void commitComputer(const int&, const int&);
-
-	void firstMove();
-	void firstMoveInSide();
-	void firstMoveInMiddle();
-	void firstMoveInCenter();
-
-	void move2();
-	void move3();
-	void move4();
-	void move5();
-	void move6();
-	void move7();
+	void commitComputer();
 
 	void think();
 
+	bool canContinue();
+	bool attackForWin();
+	bool justAttack();
+	bool attack();
+	bool notToLose();
+	bool justDefence();
+	bool defence();
+
+	void win(const bool&);
+	void lose(const bool&);
+
+	void endGame(const bool&);
 };
 
 #endif // MAINWINDOW_H

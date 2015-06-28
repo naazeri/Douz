@@ -1,20 +1,19 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
+#include <QDialog>
 #include <QTime>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	p('*'), c('O'),
-	col(3), row(3),
-	step(1)
+	col(3), row(3)
 {
 
 	ui->setupUi(this);
 
 	initData();
-
 
 }
 
@@ -44,72 +43,49 @@ void MainWindow::initData() {
 	btn[2][1] = ui->btn_21;
 	btn[2][2] = ui->btn_22;
 
-	resetScore();
-
-}
-
-void MainWindow::resetScore() {
-
-	for (short i = 0; i < row; ++i) {
+	for (short i = 0, count = 0; i < row; ++i, count = 0) {
 		for (short j = 0; j < col; ++j) {
 
-			player[i][j] = false;
-			computer[i][j] = false;
+			game[i][j] = 0;
+
 		}
 	}
-}
-
-bool MainWindow::available() const{
-
-	return (player[i][j] || computer[i][j])? false : true;
 
 }
 
 void MainWindow::move() {
 
-	if (available()) {
+	if (game[i][j] != 1) {
 
 		playerMove();
-		computerMove();
+		think();
 	}
 
 }
 
 void MainWindow::playerMove() {
 
-	commitPlayer();
-
-}
-
-void MainWindow::commitPlayer() {
-
-	player[i][j] = true;
+	game[i][j] = 1;
 
 	btn[i][j]->setText(p);
 	btn[i][j]->setFlat(true);
 
 }
 
-void MainWindow::computerMove() {
+void MainWindow::commitComputer() {
 
-	think();
-
-}
-
-void MainWindow::commitComputer(const int &i, const int &j) {
-
-	computer[i][j] = true;
+	game[i][j] = 2;
 
 	btn[i][j]->setText(c);
 	btn[i][j]->setFlat(true);
 
 }
 
-
 void MainWindow::on_btn_00_clicked() {
 
-	place = side;
-	i = top; j = left;
+//	ui->btn_00->setStyleSheet("QPushButton {color: blue}");
+
+	i = 0; j = 0;
 
 	move();
 
@@ -117,14 +93,16 @@ void MainWindow::on_btn_00_clicked() {
 
 void MainWindow::on_btn_01_clicked() {
 
+	i = 0; j = 1;
 
+	move();
 
 }
 
 void MainWindow::on_btn_02_clicked() {
 
-	place = side;
-	i = top;j = right;
+
+	i = 0; j = 2;
 
 	move();
 
@@ -132,14 +110,15 @@ void MainWindow::on_btn_02_clicked() {
 
 void MainWindow::on_btn_10_clicked() {
 
+	i = 1; j = 0;
 
+	move();
 
 }
 
 void MainWindow::on_btn_11_clicked() {
 
-	place = center;
-	i = middle; j = middle;
+	i = 1; j = 1;
 
 	move();
 
@@ -147,14 +126,16 @@ void MainWindow::on_btn_11_clicked() {
 
 void MainWindow::on_btn_12_clicked() {
 
+	i = 1; j = 2;
 
+	move();
 
 }
 
 void MainWindow::on_btn_20_clicked() {
 
-	place = side;
-	i = bottom; j = left;
+
+	i = 2; j = 0;
 
 	move();
 
@@ -162,14 +143,16 @@ void MainWindow::on_btn_20_clicked() {
 
 void MainWindow::on_btn_21_clicked() {
 
+	i = 2; j = 1;
 
+	move();
 
 }
 
 void MainWindow::on_btn_22_clicked() {
 
-	place = side;
-	i = bottom; j = right;
+
+	i = 2; j = 2;
 
 	move();
 
@@ -177,188 +160,826 @@ void MainWindow::on_btn_22_clicked() {
 
 void MainWindow::think() {
 
-	switch (step) {
+	if (canContinue()) {	// if not lose till now then...
+		if (!attackForWin()) { // if cant win then...
 
-	case 1:
+			if (!notToLose()) {
 
-		firstMove();
-		break;
+				if (!justAttack()) {
 
-	case 2:
-
-		break;
-
-	case 3:
-
-		break;
-
-	case 4:
-
-		break;
-
-	case 5:
-
-		break;
-
-	case 6:
-
-		break;
-
-	case 7:
-
-		break;
-
-	case 8:
-
-		break;
-
-	default:
-		break;
+					justDefence();
+				}
+			}
+		}
 	}
 
-}
+	else {
 
-
-void MainWindow::firstMove() {
-
-
-	if (place == side) {
-
-		firstMoveInSide();
-
-	}
-
-	else if (place == middle) {
-
-		firstMoveInMiddle();
-
-	}
-
-	else if (place == center) {
-
-		firstMoveInCenter();
-
-	}
-
-	step++;
-
-}
-
-void MainWindow::firstMoveInSide() {
-
-	commitComputer(middle, middle);
-
-
-//	if (i == top && j == left) {
-
-//		commitComputer(bottom, right);
-
-//	}
-
-//	else if (i == top && j == right) {
-
-//		commitComputer(bottom, left);
-
-//	}
-
-//	else if (i == bottom && j == left) {
-
-//		commitComputer(top, right);
-
-//	}
-
-//	else if (i == bottom && j == right) {
-
-//		commitComputer(top, left);
-
-//	}
-
-}
-
-void MainWindow::firstMoveInMiddle() {
-
-	if (i == top && j == middle) {
-
-		commitComputer(top, left);
-
-	}
-
-	else if (i == middle && j == left) {
-
-		commitComputer(top, left);
-
-	}
-
-	else if (i == middle && j == right) {
-
-		commitComputer(top, right);
-
-	}
-
-	else if (i == bottom && j == middle) {
-
-		commitComputer(top, middle);
+		endGame(false);	// we lose, end game
 
 	}
 
 }
 
-void MainWindow::firstMoveInCenter() {
+bool MainWindow::canContinue() {
 
-	QTime time = QTime::currentTime();
-	qsrand(time.msec());
+	for (int i=0, cnt1=0, cnt2=0; i < row; ++i, cnt1 = cnt2 = 0) {
 
-	int rand = qrand() %4;
+		for (int j = 0; j < col; ++j) {
 
-	if (rand == 0) {
+			if (game[i][j] == 2) {	//row
 
-		commitComputer(0,0);
-	}
-	else if (rand == 1) {
+				cnt1++;
+			}
 
-		commitComputer(0,2);
-	}
-	else if (rand == 2) {
+			if (game[j][i] == 2) {	//col
 
-		commitComputer(2,0);
-	}
-	else if (rand == 3) {
+				cnt2++;
+			}
+		}
 
-		commitComputer(2,2);
-	}
+		if (cnt1 == 3 || cnt2 == 3) {
 
-}
-
-void MainWindow::move2() {
-
-	if (i == top && j == left) {
-
-
+			return false;
+		}
 	}
 
-}
+	///// orib /////
+	if (game[0][0] == 1 && game[1][1] == 1 && game[2][2] == 1) {
 
-void MainWindow::move3() {
+		return false;
+	}
 
+	if (game[0][2] == 1 && game[1][1] == 1 && game[2][0] == 1) {
 
-}
+		return false;
+	}
 
-void MainWindow::move4() {
-
-
-}
-
-void MainWindow::move5() {
-
+	return true;
 
 }
 
-void MainWindow::move6() {
+bool MainWindow::attackForWin() {
 
+	for (int i=0, cnt1=0, cnt2=0; i < row; ++i, cnt1 = cnt2 = 0) {
+
+		for (int j = 0; j < col; ++j) {
+
+			if (game[i][j] == 2) {	//row
+
+				cnt1++;
+			}
+
+			if (game[j][i] == 2) {	//col
+
+				cnt2++;
+			}
+		}
+
+		if (cnt1 == 2) {
+
+			this->i = i;
+			win(true);
+			return true;
+		}
+
+		if (cnt2 == 2) {
+
+			this->j = i;
+			win(false);
+			return true;
+		}
+	}
+
+	///// orib /////
+	if (game[0][0] == 2 && game[1][1] == 2) {
+
+		i = j = 2;
+
+		commitComputer();
+		endGame(true);
+		return true;
+	}
+
+	if (game[0][0] == 2 && game[2][2] == 2) {
+
+		i = j = 1;
+
+		commitComputer();
+		endGame(true);
+		return true;
+	}
+
+	if (game[1][1] == 2 && game[2][2] == 2) {
+
+		i = j = 0;
+
+		commitComputer();
+		endGame(true);
+		return true;
+	}
+
+	if (game[0][2] == 2 && game[1][1] == 2) {
+
+		i = 2; j = 0;
+
+		commitComputer();
+		endGame(true);
+		return true;
+	}
+
+	if (game[0][2] == 2 && game[2][0] == 2) {
+
+		i = 1; j = 1;
+
+		commitComputer();
+		endGame(true);
+		return true;
+	}
+
+	if (game[1][1] == 2 && game[2][0] == 2) {
+
+		i = 0; j = 0;
+
+		commitComputer();
+		endGame(true);
+		return true;
+	}
+
+	return false;
 
 }
 
-void MainWindow::move7() {
+void MainWindow::win(const bool &row) {
 
+	if (row) {
+
+		if (game[i][0] == 2 && game[i][1] == 2) {
+
+			j = 2;
+			commitComputer();
+
+		}
+
+		else if (game[i][0] == 2 && game[i][2] == 2) {
+
+			j = 1;
+			commitComputer();
+
+		}
+
+		else if (game[i][1] == 2 &&  game[i][2] == 2) {
+
+			j = 0;
+			commitComputer();
+
+		}
+
+	}
+
+	else {
+
+		if (game[0][j] == 2 && game[1][j] == 2) {
+
+			i = 2;
+			commitComputer();
+
+		}
+
+		else if (game[0][j] == 2 && game[2][j] == 2) {
+
+			i = 1;
+			commitComputer();
+
+		}
+
+		else if (game[1][j] == 2 &&  game[2][j] == 2) {
+
+			i = 0;
+			commitComputer();
+
+		}
+
+	}
+
+	endGame(true);
+
+}
+
+bool MainWindow::justAttack() {
+
+	for (int i = 0; i < row; ++i) {
+
+		for (int j = 0; j < col; ++j) {
+
+			if (game[i][j] == 2) {
+
+				this->i = i;
+				this->j = j;
+
+				if(attack()) {
+
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+
+}
+
+bool MainWindow::attack() {
+
+	if (i == 0) {
+
+		if (j == 0) {
+
+			if (game[0][1] == 0) {
+
+				i = 0; j = 1;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][0]) {
+
+				i = 1; j = 0;
+				commitComputer();
+				return true;
+			}
+		}
+
+		else if (j == 1) {
+
+			if (game[0][0] == 0) {
+
+				i = 0; j = 0;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[0][2]) {
+
+				i = 0; j = 2;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][1]) {
+
+				i = 1; j = 1;
+				commitComputer();
+				return true;
+			}
+		}
+
+		else if (j == 2) {
+
+			if (game[0][1] == 0) {
+
+				i = 0; j = 1;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][2]) {
+
+				i = 1; j = 2;
+				commitComputer();
+				return true;
+			}
+		}
+	}
+
+	else if (i == 1) {
+
+		if (j == 0) {
+
+			if (game[0][0] == 0) {
+
+				i = 0; j = 0;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][1]) {
+
+				i = 1; j = 1;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[2][0]) {
+
+				i = 2; j = 0;
+				commitComputer();
+				return true;
+			}
+		}
+
+		else if (j == 1) {
+
+			if (game[0][1] == 0) {
+
+				i = 0; j = 1;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][0]) {
+
+				i = 1; j = 0;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][2]) {
+
+				i = 1; j = 2;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[2][1]) {
+
+				i = 2; j = 1;
+				commitComputer();
+				return true;
+			}
+		}
+
+		else if (j == 2) {
+
+			if (game[0][2] == 0) {
+
+				i = 0; j = 2;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][1]) {
+
+				i = 1; j = 1;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[2][2]) {
+
+				i = 2; j = 2;
+				commitComputer();
+				return true;
+			}
+		}
+	}
+
+	else if (i == 2) {
+
+		if (j == 0) {
+
+			if (game[1][0] == 0) {
+
+				i = 1; j = 0;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[2][1]) {
+
+				i = 2; j = 1;
+				commitComputer();
+				return true;
+			}
+		}
+
+		else if (j == 1) {
+
+			if (game[2][0] == 0) {
+
+				i = 2; j = 0;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][1]) {
+
+				i = 1; j = 1;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[2][2]) {
+
+				i = 2; j = 2;
+				commitComputer();
+				return true;
+			}
+		}
+
+		else if (j == 2) {
+
+			if (game[1][2] == 0) {
+
+				i = 1; j = 2;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[2][1]) {
+
+				i = 2; j = 1;
+				commitComputer();
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool MainWindow::notToLose() {
+
+	for (int i=0, cnt1=0, cnt2=0; i < row; ++i, cnt1 = cnt2 = 0) {
+
+		for (int j = 0; j < col; ++j) {
+
+			if (game[i][j] == 1) {
+
+				cnt1++;
+			}
+
+			if (game[j][i] == 1) {
+
+				cnt2++;
+			}
+		}
+
+		if (cnt1 == 2) {
+
+			this->i = i;
+			lose(true);
+			return true;
+		}
+
+		if (cnt2 == 2) {
+
+			this->j = i;
+			lose(false);
+			return true;
+		}
+	}
+
+	///// orib /////
+	if (game[0][0] == 1 && game[1][1] == 1) {
+
+		i = j = 2;
+
+		commitComputer();
+		return true;
+	}
+
+	if (game[0][0] == 1 && game[2][2] == 1) {
+
+		i = j = 1;
+
+		commitComputer();
+		return true;
+	}
+
+	if (game[1][1] == 1 && game[2][2] == 1) {
+
+		i = j = 0;
+
+		commitComputer();
+		return true;
+	}
+
+	if (game[0][2] == 1 && game[1][1] == 1) {
+
+		i = 2; j = 0;
+
+		commitComputer();
+		return true;
+	}
+
+	if (game[0][2] == 1 && game[2][0] == 1) {
+
+		i = 1; j = 1;
+
+		commitComputer();
+		return true;
+	}
+
+	if (game[1][1] == 1 && game[2][0] == 1) {
+
+		i = 0; j = 0;
+
+		commitComputer();
+		return true;
+	}
+
+	return false;
+
+}
+
+void MainWindow::lose(const bool &row) {
+
+	if (row) {
+
+		if (game[i][0] == 1 && game[i][1] == 1) {
+
+			j = 2;
+			commitComputer();
+
+		}
+
+		else if (game[i][0] == 1 && game[i][2] == 1) {
+
+			j = 1;
+			commitComputer();
+
+		}
+
+		else if (game[i][1] == 1 &&  game[i][2] == 1) {
+
+			j = 0;
+			commitComputer();
+
+		}
+
+	}
+
+	else {
+
+		if (game[0][j] == 1 && game[1][j] == 1) {
+
+			i = 2;
+			commitComputer();
+
+		}
+
+		else if (game[0][j] == 1 && game[2][j] == 1) {
+
+			i = 1;
+			commitComputer();
+
+		}
+
+		else if (game[1][j] == 1 &&  game[2][j] == 1) {
+
+			i = 0;
+			commitComputer();
+
+		}
+	}
+}
+
+bool MainWindow::justDefence() {
+
+	for (int i = 0; i < row; ++i) {
+
+		for (int j = 0; j < col; ++j) {
+
+			if (game[i][j] == 1) {
+
+				this->i = i;
+				this->j = j;
+
+				if (defence()) {
+
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+
+}
+
+bool MainWindow::defence() {
+
+	if (i == 0) {
+
+		if (j == 0) {
+
+			if (game[0][1] == 0) {
+
+				i = 0; j = 1;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][0]) {
+
+				i = 1; j = 0;
+				commitComputer();
+				return true;
+			}
+		}
+
+		else if (j == 1) {
+
+			if (game[0][0] == 0) {
+
+				i = 0; j = 0;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[0][2]) {
+
+				i = 0; j = 2;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][1]) {
+
+				i = 1; j = 1;
+				commitComputer();
+				return true;
+			}
+		}
+
+		else if (j == 2) {
+
+			if (game[0][1] == 0) {
+
+				i = 0; j = 1;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][2]) {
+
+				i = 1; j = 2;
+				commitComputer();
+				return true;
+			}
+		}
+	}
+
+	else if (i == 1) {
+
+		if (j == 0) {
+
+			if (game[0][0] == 0) {
+
+				i = 0; j = 0;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][1]) {
+
+				i = 1; j = 1;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[2][0]) {
+
+				i = 2; j = 0;
+				commitComputer();
+				return true;
+			}
+		}
+
+		else if (j == 1) {
+
+			if (game[0][1] == 0) {
+
+				i = 0; j = 1;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][0]) {
+
+				i = 1; j = 0;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][2]) {
+
+				i = 1; j = 2;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[2][1]) {
+
+				i = 2; j = 1;
+				commitComputer();
+				return true;
+			}
+		}
+
+		else if (j == 2) {
+
+			if (game[0][2] == 0) {
+
+				i = 0; j = 2;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][1]) {
+
+				i = 1; j = 1;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[2][2]) {
+
+				i = 2; j = 2;
+				commitComputer();
+				return true;
+			}
+		}
+	}
+
+	else if (i == 2) {
+
+		if (j == 0) {
+
+			if (game[1][0] == 0) {
+
+				i = 1; j = 0;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[2][1]) {
+
+				i = 2; j = 1;
+				commitComputer();
+				return true;
+			}
+		}
+
+		else if (j == 1) {
+
+			if (game[2][0] == 0) {
+
+				i = 2; j = 0;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[1][1]) {
+
+				i = 1; j = 1;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[2][2]) {
+
+				i = 2; j = 2;
+				commitComputer();
+				return true;
+			}
+		}
+
+		else if (j == 2) {
+
+			if (game[1][2] == 0) {
+
+				i = 1; j = 2;
+				commitComputer();
+				return true;
+			}
+
+			else if (game[2][1]) {
+
+				i = 2; j = 1;
+				commitComputer();
+				return true;
+			}
+		}
+	}
+
+	return false;
+
+}
+
+void MainWindow::endGame(const bool &winComputer) {
+
+	if (winComputer) {
+
+		ui->resualt_lbl->setText("<font color='red'>You Lose</font>");
+
+	}
+
+	else {
+
+		ui->resualt_lbl->setText("<font color='green'>You Win</font>");
+
+	}
 
 }
